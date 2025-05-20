@@ -1,6 +1,7 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
+import { ErrorMiddleware } from "./middleware/error";
 require("dotenv").config();
 export const app = express();
 
@@ -25,3 +26,5 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   err.statusCode = 404;
   next(err);
 });
+
+app.use(ErrorMiddleware);
