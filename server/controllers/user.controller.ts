@@ -1,14 +1,20 @@
-import jwt, { Secret } from "jsonwebtoken";
+import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import {
   IActivationRequest,
   IActivationToken,
   ILoginRequest,
   IRegistrationBody,
+  ISocialAuthBody,
 } from "../interfaces/user.interface";
 import { CatchAsyncError } from "../middleware/catchAsyncErrors";
 import userModel, { IUser } from "../models/user.model";
+import { getUserById } from "../services/user.service";
 import ErrorHandler from "../utils/errorHandler";
-import { sendToken } from "../utils/jwt";
+import {
+  accessTokenOptions,
+  refreshTokenOptions,
+  sendToken,
+} from "../utils/jwt";
 import sendEmail from "../utils/mail";
 import { redis } from "../utils/redis";
 import TryCatch from "../utils/tryCatch";
@@ -113,5 +119,72 @@ export const logoutUser = CatchAsyncError(
       success: true,
       message: "Logout successfully",
     });
+  })
+);
+
+export const updateAccessToken = CatchAsyncError(
+  TryCatch(async (req, res, next) => {
+    const refresh_token = req.cookies.refresh_token;
+    const decoded = jwt.verify(
+      refresh_token,
+      process.env.REFRESH_TOKEN as string
+    ) as JwtPayload;
+
+    const message = "Could not refresh token";
+    if (!decoded) {
+      return next(new ErrorHandler(message, 400));
+    }
+    const session = await redis.get((decoded as JwtPayload).id);
+    if (!session) {
+      return next(new ErrorHandler(message, 400));
+    }
+    const user = JSON.parse(session);
+
+    const accessToken = jwt.sign(
+      { id: user._id },
+      process.env.ACCESS_TOKEN as string,
+      { expiresIn: "5m" }
+    );
+
+    const refreshToken = jwt.sign(
+      { id: user._id },
+      process.env.REFRESH_TOKEN as string,
+      { expiresIn: "3d" }
+    );
+
+    res.cookie("access_token", accessToken, accessTokenOptions);
+    res.cookie("refresh_token", refreshToken, refreshTokenOptions);
+
+    res.status(200).json({
+      success: true,
+      accessToken,
+    });
+  })
+);
+
+export const getUserInfo = CatchAsyncError(
+  TryCatch(async (req, res, next) => {
+    const userId = req.user?._id;
+    const user = await getUserById(userId as string);
+    if (!user) {
+      return next(new ErrorHandler("User not found", 404));
+    }
+    res.status(201).json({
+      success: true,
+      user,
+    });
+  })
+);
+
+export const socialAuth = CatchAsyncError(
+  TryCatch(async (req, res, next) => {
+    const { email, name, avatar } = req.body as ISocialAuthBody;
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      const newUser = await userModel.create({ email, name, avatar });
+      sendToken(newUser, 200, res);
+    } else {
+      sendToken(user, 200, res);
+    }
   })
 );
