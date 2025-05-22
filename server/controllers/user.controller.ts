@@ -1,3 +1,4 @@
+import cloudinary from "cloudinary";
 import { Types } from "mongoose";
 import { IUpdateUserInfo } from "../interfaces/user.interface";
 import { CatchAsyncError } from "../middleware/catchAsyncErrors";
@@ -44,6 +45,47 @@ export const updateUserInfo = CatchAsyncError(
     }
     await user?.save();
 
+    if (userId instanceof Types.ObjectId) {
+      redis.set(userId.toString(), JSON.stringify(user));
+    } else {
+      console.error("userId is not an ObjectId");
+    }
+    res.status(201).json({
+      success: true,
+      user,
+    });
+  })
+);
+
+export const updateProfilePicture = CatchAsyncError(
+  TryCatch(async (req, res, next) => {
+    const { avatar } = req.body;
+    const userId = req.user?._id;
+    const user = await userModel.findById(userId);
+
+    if (avatar && user) {
+      if (user?.avatar.public_id) {
+        await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+        const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+          folder: "LMS_Avatars",
+        });
+        user.avatar = {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
+        };
+      } else {
+        const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+          folder: "LMS_Avatars",
+        });
+        user.avatar = {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
+        };
+      }
+    } else {
+      return next(new ErrorHandler("Please provide avatar", 400));
+    }
+    await user.save();
     if (userId instanceof Types.ObjectId) {
       redis.set(userId.toString(), JSON.stringify(user));
     } else {
