@@ -7,7 +7,7 @@ import {
   IRegistrationBody,
   ISocialAuthBody,
   IUpdatePassword,
-} from "../interfaces/user.interface";
+} from "../interfaces/auth.interface";
 import { CatchAsyncError } from "../middleware/catchAsyncErrors";
 import userModel, { IUser } from "../models/user.model";
 import ErrorHandler from "../utils/errorHandler";
