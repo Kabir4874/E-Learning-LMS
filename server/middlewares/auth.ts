@@ -1,0 +1,33 @@
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { CatchAsyncError } from "../middleware/catchAsyncErrors";
+import ErrorHandler from "../utils/errorHandler";
+import { redis } from "../utils/redis";
+import TryCatch from "../utils/tryCatch";
+
+export const isAuthenticated = CatchAsyncError(
+  TryCatch(async (req, res, next) => {
+    const access_token = req.cookies.access_token;
+
+    if (!access_token) {
+      return next(
+        new ErrorHandler("Please login to access this resource", 400)
+      );
+    }
+    const decoded = jwt.verify(
+      access_token,
+      process.env.ACCESS_TOKEN as string
+    ) as JwtPayload | string;
+
+    if (!decoded) {
+      return next(
+        new ErrorHandler("Please login to access this resource", 400)
+      );
+    }
+    const user = await redis.get((decoded as JwtPayload).id);
+    if (!user) {
+      return next(new ErrorHandler("User not found", 404));
+    }
+    req.user = JSON.parse(user);
+    next();
+  })
+);

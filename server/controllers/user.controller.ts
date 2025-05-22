@@ -10,6 +10,7 @@ import userModel, { IUser } from "../models/user.model";
 import ErrorHandler from "../utils/errorHandler";
 import { sendToken } from "../utils/jwt";
 import sendEmail from "../utils/mail";
+import { redis } from "../utils/redis";
 import TryCatch from "../utils/tryCatch";
 require("dotenv").config();
 
@@ -102,6 +103,12 @@ export const logoutUser = CatchAsyncError(
   TryCatch(async (req, res, next) => {
     res.cookie("access_token", "", { maxAge: 1 });
     res.cookie("refresh_token", "", { maxAge: 1 });
+    if (req.user?._id) {
+      redis.del(req.user._id.toString());
+    } else {
+      console.error("User ID not found or invalid");
+    }
+
     res.status(200).json({
       success: true,
       message: "Logout successfully",
