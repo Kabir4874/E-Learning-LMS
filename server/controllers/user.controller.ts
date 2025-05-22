@@ -2,11 +2,13 @@ import jwt, { Secret } from "jsonwebtoken";
 import {
   IActivationRequest,
   IActivationToken,
+  ILoginRequest,
   IRegistrationBody,
 } from "../interfaces/user.interface";
 import { CatchAsyncError } from "../middleware/catchAsyncErrors";
 import userModel, { IUser } from "../models/user.model";
 import ErrorHandler from "../utils/errorHandler";
+import { sendToken } from "../utils/jwt";
 import sendEmail from "../utils/mail";
 import TryCatch from "../utils/tryCatch";
 require("dotenv").config();
@@ -73,6 +75,36 @@ export const activateUser = CatchAsyncError(
     res.status(201).json({
       success: true,
       user,
+    });
+  })
+);
+
+export const loginUser = CatchAsyncError(
+  TryCatch(async (req, res, next) => {
+    const { email, password } = req.body as ILoginRequest;
+    if (!email || !password) {
+      return next(new ErrorHandler("Please enter email and password", 400));
+    }
+    const user = await userModel.findOne({ email }).select("+password");
+    if (!user) {
+      return next(new ErrorHandler("Invalid email or password", 400));
+    }
+    const isPasswordMatched = await user.comparePassword(password);
+    if (!isPasswordMatched) {
+      return next(new ErrorHandler("Invalid email or password", 400));
+    }
+
+    sendToken(user, 200, res);
+  })
+);
+
+export const logoutUser = CatchAsyncError(
+  TryCatch(async (req, res, next) => {
+    res.cookie("access_token", "", { maxAge: 1 });
+    res.cookie("refresh_token", "", { maxAge: 1 });
+    res.status(200).json({
+      success: true,
+      message: "Logout successfully",
     });
   })
 );
