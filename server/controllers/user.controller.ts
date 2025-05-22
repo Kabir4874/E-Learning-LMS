@@ -1,14 +1,15 @@
 import jwt, { JwtPayload, Secret } from "jsonwebtoken";
+import { Types } from "mongoose";
 import {
   IActivationRequest,
   IActivationToken,
   ILoginRequest,
   IRegistrationBody,
   ISocialAuthBody,
+  IUpdateUserInfo,
 } from "../interfaces/user.interface";
 import { CatchAsyncError } from "../middleware/catchAsyncErrors";
 import userModel, { IUser } from "../models/user.model";
-import { getUserById } from "../services/user.service";
 import ErrorHandler from "../utils/errorHandler";
 import {
   accessTokenOptions,
@@ -152,6 +153,8 @@ export const updateAccessToken = CatchAsyncError(
       { expiresIn: "3d" }
     );
 
+    req.user = user;
+
     res.cookie("access_token", accessToken, accessTokenOptions);
     res.cookie("refresh_token", refreshToken, refreshTokenOptions);
 
@@ -165,7 +168,13 @@ export const updateAccessToken = CatchAsyncError(
 export const getUserInfo = CatchAsyncError(
   TryCatch(async (req, res, next) => {
     const userId = req.user?._id;
-    const user = await getUserById(userId as string);
+    const data = await redis.get(userId as string);
+
+    let user;
+    if (data) {
+      user = JSON.parse(data);
+    }
+
     if (!user) {
       return next(new ErrorHandler("User not found", 404));
     }
@@ -186,5 +195,34 @@ export const socialAuth = CatchAsyncError(
     } else {
       sendToken(user, 200, res);
     }
+  })
+);
+
+export const updateUserInfo = CatchAsyncError(
+  TryCatch(async (req, res, next) => {
+    const { email, name } = req.body as IUpdateUserInfo;
+    const userId = req.user?._id;
+    const user = await userModel.findById(userId);
+    if (email && user) {
+      const isEmailExist = await userModel.findOne({ email });
+      if (isEmailExist) {
+        return next(new ErrorHandler("Email already exist", 400));
+      }
+      user.email = email;
+    }
+    if (name && user) {
+      user.name = name;
+    }
+    await user?.save();
+
+    if (userId instanceof Types.ObjectId) {
+      redis.set(userId.toString(), JSON.stringify(user));
+    } else {
+      console.error("userId is not an ObjectId");
+    }
+    res.status(201).json({
+      success: true,
+      user,
+    });
   })
 );
