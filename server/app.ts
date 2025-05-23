@@ -3,6 +3,7 @@ import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
 import { ErrorMiddleware } from "./middleware/error";
 import authRoutes from "./routes/auth.route";
+import courseRoutes from "./routes/course.route";
 import userRoutes from "./routes/user.route";
 require("dotenv").config();
 export const app = express();
@@ -19,6 +20,7 @@ app.use(
 
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/course", courseRoutes);
 
 app.get("/test", (req: Request, res: Response, next: NextFunction) => {
   res.status(200).json({
