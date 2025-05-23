@@ -54,3 +54,17 @@ export const editCourse = CatchAsyncError(
     });
   })
 );
+
+export const getSingleCourse = CatchAsyncError(
+  TryCatch(async (req, res, next) => {
+    const course = await courseModel
+      .findById(req.params.id)
+      .select(
+        "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links"
+      );
+    res.status(200).json({
+      success: true,
+      course,
+    });
+  })
+);
