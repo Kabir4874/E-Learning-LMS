@@ -1,6 +1,7 @@
 import express from "express";
 import {
   editCourse,
+  getAllCourses,
   getSingleCourse,
   uploadCourse,
 } from "../controllers/course.controller";
@@ -15,4 +16,5 @@ router.patch(
   editCourse
 );
 router.get("/get/:id", getSingleCourse);
+router.get("/get", getAllCourses);
 export default router;
