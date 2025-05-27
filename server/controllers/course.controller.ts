@@ -1,4 +1,6 @@
 import cloudinary from "cloudinary";
+import mongoose from "mongoose";
+import { IAddQuestionData } from "../interfaces/course.interface";
 import { CatchAsyncError } from "../middleware/catchAsyncErrors";
 import courseModel from "../models/course.model";
 import ErrorHandler from "../utils/errorHandler";
@@ -123,6 +125,33 @@ export const getCourseByUser = CatchAsyncError(
     res.status(200).json({
       success: true,
       content,
+    });
+  })
+);
+
+export const addQuestion = CatchAsyncError(
+  TryCatch(async (req, res, next) => {
+    const { question, courseId, contentId }: IAddQuestionData = req.body;
+    const course = await courseModel.findById(courseId);
+    if (!mongoose.Types.ObjectId.isValid(contentId)) {
+      return next(new ErrorHandler("Invalid content", 400));
+    }
+    const courseContent = course?.courseData.find((item: any) =>
+      item._id.equals(contentId)
+    );
+    if (!courseContent) {
+      return next(new ErrorHandler("Invalid content id", 400));
+    }
+    const newQuestion: any = {
+      user: req.user,
+      question,
+      questionReplies: [],
+    };
+    courseContent.questions.push(newQuestion);
+    await course?.save();
+    res.status(200).json({
+      success: true,
+      course,
     });
   })
 );
