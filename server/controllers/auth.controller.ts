@@ -8,7 +8,7 @@ import {
   ISocialAuthBody,
   IUpdatePassword,
 } from "../interfaces/auth.interface";
-import { CatchAsyncError } from "../middleware/catchAsyncErrors";
+import { CatchAsyncError } from "../middlewares/catchAsyncErrors";
 import userModel, { IUser } from "../models/user.model";
 import ErrorHandler from "../utils/errorHandler";
 import {

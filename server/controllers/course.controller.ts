@@ -1,9 +1,10 @@
 import cloudinary from "cloudinary";
 import mongoose from "mongoose";
 import { IAddQuestionData } from "../interfaces/course.interface";
-import { CatchAsyncError } from "../middleware/catchAsyncErrors";
+import { CatchAsyncError } from "../middlewares/catchAsyncErrors";
 import courseModel from "../models/course.model";
 import ErrorHandler from "../utils/errorHandler";
+import sendEmail from "../utils/mail";
 import { redis } from "../utils/redis";
 import TryCatch from "../utils/tryCatch";
 export const uploadCourse = CatchAsyncError(
@@ -149,6 +150,56 @@ export const addQuestion = CatchAsyncError(
     };
     courseContent.questions.push(newQuestion);
     await course?.save();
+    res.status(200).json({
+      success: true,
+      course,
+    });
+  })
+);
+
+export const addAnswer = CatchAsyncError(
+  TryCatch(async (req, res, next) => {
+    const { answer, courseId, contentId, questionId } = req.body;
+    const course = await courseModel.findById(courseId);
+    if (!mongoose.Types.ObjectId.isValid(contentId)) {
+      return next(new ErrorHandler("Invalid content id", 400));
+    }
+    const courseContent = course?.courseData.find((item: any) =>
+      item._id.equals(contentId)
+    );
+    if (!courseContent) {
+      return next(new ErrorHandler("Invalid content id", 400));
+    }
+    const question = courseContent.questions.find((item: any) =>
+      item._id.equals(questionId)
+    );
+    if (!question) {
+      return next(new ErrorHandler("Invalid question id", 400));
+    }
+
+    const newAnswer: any = {
+      user: req.user,
+      answer,
+    };
+    question.questionReplies?.push(newAnswer);
+    await course?.save();
+    if (req.user?._id === question.user._id) {
+    } else {
+      const data = {
+        name: question.user.name,
+        title: courseContent.title,
+      };
+      try {
+        await sendEmail({
+          email: question.user.email,
+          subject: "Question Reply",
+          template: "question-reply.ejs",
+          data,
+        });
+      } catch (error: any) {
+        return next(new ErrorHandler(error.message, 500));
+      }
+    }
     res.status(200).json({
       success: true,
       course,
