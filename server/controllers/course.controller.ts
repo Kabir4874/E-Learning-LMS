@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import {
   IAddQuestionData,
   IAddReviewData,
+  IAddReviewReplyData,
 } from "../interfaces/course.interface";
 import { CatchAsyncError } from "../middlewares/catchAsyncErrors";
 import courseModel from "../models/course.model";
@@ -242,6 +243,35 @@ export const addReview = CatchAsyncError(
       title: "New Review Received",
       message: `${req.user?.name} has given a review in ${course?.name}`,
     };
+    res.status(200).json({
+      success: true,
+      course,
+    });
+  })
+);
+
+export const addReplyToReview = CatchAsyncError(
+  TryCatch(async (req, res, next) => {
+    const { comment, courseId, reviewId } = req.body as IAddReviewReplyData;
+    const course = await courseModel.findById(courseId);
+    if (!course) {
+      return next(new ErrorHandler("Course not found", 404));
+    }
+    const review = course.reviews.find(
+      (rev: any) => rev._id.toString() === reviewId.toString()
+    );
+    if (!review) {
+      return next(new ErrorHandler("Review not found", 404));
+    }
+    const replyData: any = {
+      user: req.user,
+      comment,
+    };
+    if (!review.commentReplies) {
+      review.commentReplies = [];
+    }
+    review.commentReplies?.push(replyData);
+    await course.save();
     res.status(200).json({
       success: true,
       course,
