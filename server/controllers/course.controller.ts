@@ -1,6 +1,9 @@
 import cloudinary from "cloudinary";
 import mongoose from "mongoose";
-import { IAddQuestionData } from "../interfaces/course.interface";
+import {
+  IAddQuestionData,
+  IAddReviewData,
+} from "../interfaces/course.interface";
 import { CatchAsyncError } from "../middlewares/catchAsyncErrors";
 import courseModel from "../models/course.model";
 import ErrorHandler from "../utils/errorHandler";
@@ -200,6 +203,45 @@ export const addAnswer = CatchAsyncError(
         return next(new ErrorHandler(error.message, 500));
       }
     }
+    res.status(200).json({
+      success: true,
+      course,
+    });
+  })
+);
+
+export const addReview = CatchAsyncError(
+  TryCatch(async (req, res, next) => {
+    const userCourseList = req.user?.courses;
+    const courseId = req.params.id;
+    const courseExists = userCourseList?.some(
+      (course: any) => course._id.toString() === courseId.toString()
+    );
+    if (!courseExists) {
+      return next(
+        new ErrorHandler("You are not eligible to access this course", 400)
+      );
+    }
+    const course = await courseModel.findById(courseId);
+    const { review, rating } = req.body as IAddReviewData;
+    const reviewData: any = {
+      user: req.user,
+      comment: review,
+      rating,
+    };
+    course?.reviews.push(reviewData);
+    let avg = 0;
+    course?.reviews.forEach((rev: any) => {
+      avg += rev.rating;
+    });
+    if (course) {
+      course.ratings = avg / course.reviews.length;
+    }
+    await course?.save();
+    const notification = {
+      title: "New Review Received",
+      message: `${req.user?.name} has given a review in ${course?.name}`,
+    };
     res.status(200).json({
       success: true,
       course,

@@ -10,3 +10,10 @@ export interface IAddAnswerData {
   contentId: string;
   questionId: string;
 }
+
+export interface IAddReviewData {
+  review: string;
+  courseId: string;
+  rating: number;
+  userId: string;
+}
