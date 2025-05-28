@@ -7,6 +7,7 @@ import {
 } from "../interfaces/course.interface";
 import { CatchAsyncError } from "../middlewares/catchAsyncErrors";
 import courseModel from "../models/course.model";
+import userModel from "../models/user.model";
 import ErrorHandler from "../utils/errorHandler";
 import sendEmail from "../utils/mail";
 import { redis } from "../utils/redis";
@@ -213,10 +214,11 @@ export const addAnswer = CatchAsyncError(
 
 export const addReview = CatchAsyncError(
   TryCatch(async (req, res, next) => {
-    const userCourseList = req.user?.courses;
+    const user = await userModel.findById(req.user._id);
+    const userCourseList = user?.courses;
     const courseId = req.params.id;
     const courseExists = userCourseList?.some(
-      (course: any) => course._id.toString() === courseId.toString()
+      (course: any) => course.courseId.toString() === courseId
     );
     if (!courseExists) {
       return next(

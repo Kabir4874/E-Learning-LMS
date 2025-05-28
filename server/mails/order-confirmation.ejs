@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Confirmation</title>
+    <style type="text/css">
+      /* Base Styles */
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f7f9fc;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Header Section */
+      .header {
+        text-align: center;
+        padding: 30px 0;
+        background: linear-gradient(135deg, #6e8efb, #a777e3);
+        color: white;
+        border-radius: 8px 8px 0 0;
+        margin: -20px -20px 20px -20px;
+      }
+
+      .header h1 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 600;
+      }
+
+      .header p {
+        margin: 10px 0 0;
+        font-size: 16px;
+        opacity: 0.9;
+      }
+
+      /* Order Info Section */
+      .order-info {
+        margin-bottom: 30px;
+      }
+
+      .order-info h2 {
+        color: #4a4a4a;
+        font-size: 20px;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eaeaea;
+      }
+
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+
+      .info-label {
+        font-weight: 600;
+        color: #666;
+      }
+
+      .info-value {
+        color: #333;
+      }
+
+      /* Course Table */
+      .course-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+
+      .course-table th {
+        background-color: #f5f7fa;
+        padding: 12px 15px;
+        text-align: left;
+        font-weight: 600;
+        color: #4a5568;
+        border-bottom: 2px solid #e2e8f0;
+      }
+
+      .course-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .course-name {
+        font-weight: 500;
+        color: #2d3748;
+      }
+
+      .course-price {
+        font-weight: 600;
+        color: #2d3748;
+      }
+
+      /* Total Section */
+      .total-section {
+        background-color: #f8fafc;
+        padding: 15px;
+        border-radius: 6px;
+        margin-top: 20px;
+        text-align: right;
+      }
+
+      .total-label {
+        font-weight: 600;
+        color: #4a5568;
+      }
+
+      .total-value {
+        font-size: 20px;
+        font-weight: 700;
+        color: #2d3748;
+      }
+
+      /* Footer */
+      .footer {
+        text-align: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #eaeaea;
+        color: #718096;
+        font-size: 14px;
+      }
+
+      .footer a {
+        color: #667eea;
+        text-decoration: none;
+      }
+
+      /* Responsive */
+      @media only screen and (max-width: 600px) {
+        .container {
+          padding: 10px;
+        }
+
+        .header {
+          padding: 20px 0;
+        }
+
+        .header h1 {
+          font-size: 24px;
+        }
+
+        .course-table th,
+        .course-table td {
+          padding: 8px 10px;
+          font-size: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <h1>Your eLearning Order is Confirmed!</h1>
+        <p>We're excited to have you on board. Let's start learning!</p>
+      </div>
+
+      <!-- Order Information -->
+      <div class="order-info">
+        <h2>Order Details</h2>
+        <div class="info-row">
+          <span class="info-label">Order Number:</span>
+          <span class="info-value">#<%= order._id %></span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Order Date:</span>
+          <span class="info-value"><%= order.date %></span>
+        </div>
+      </div>
+
+      <!-- Course Details -->
+      <h2>Course Details</h2>
+      <table class="course-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="course-name"><%= order.name %></td>
+            <td>1</td>
+            <td class="course-price">$<%= order.price %></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Total -->
+      <div class="total-section">
+        <span class="total-label">Total:</span>
+        <span class="total-value">$<%= order.price %></span>
+      </div>
+
+      <!-- Next Steps -->
+      <div
+        style="
+          margin-top: 30px;
+          padding: 20px;
+          background-color: #f0f7ff;
+          border-radius: 6px;
+        "
+      >
+        <h3 style="margin-top: 0; color: #2c5282">Next Steps</h3>
+        <p>
+          Your course is now available in your
+          <a href="#" style="color: #4299e1; font-weight: 500"
+            >learning dashboard</a
+          >. We've sent you a separate email with access instructions.
+        </p>
+        <p>
+          If you have any questions, please reply to this email or contact our
+          support team.
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>
+          © <%= new Date().getFullYear() %> Your eLearning Platform. All rights
+          reserved.
+        </p>
+        <p>
+          <a href="#">Visit our website</a> |
+          <a href="#">Contact Support</a>
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
