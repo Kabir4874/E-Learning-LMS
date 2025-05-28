@@ -1,7 +1,7 @@
 import cloudinary from "cloudinary";
 import { Types } from "mongoose";
 import { IUpdateUserInfo } from "../interfaces/user.interface";
-import { CatchAsyncError } from "../middleware/catchAsyncErrors";
+import { CatchAsyncError } from "../middlewares/catchAsyncErrors";
 import userModel from "../models/user.model";
 import ErrorHandler from "../utils/errorHandler";
 import { redis } from "../utils/redis";

@@ -1,7 +1,7 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
-import { ErrorMiddleware } from "./middleware/error";
+import { ErrorMiddleware } from "./middlewares/error";
 import authRoutes from "./routes/auth.route";
 import courseRoutes from "./routes/course.route";
 import userRoutes from "./routes/user.route";

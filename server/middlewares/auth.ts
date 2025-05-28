@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { CatchAsyncError } from "../middleware/catchAsyncErrors";
+import { CatchAsyncError } from "../middlewares/catchAsyncErrors";
 import ErrorHandler from "../utils/errorHandler";
 import { redis } from "../utils/redis";
 import TryCatch from "../utils/tryCatch";
