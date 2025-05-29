@@ -13,6 +13,7 @@ import ErrorHandler from "../utils/errorHandler";
 import sendEmail from "../utils/mail";
 import { redis } from "../utils/redis";
 import TryCatch from "../utils/tryCatch";
+
 export const uploadCourse = CatchAsyncError(
   TryCatch(async (req, res, next) => {
     const data = req.body;
@@ -82,7 +83,7 @@ export const getSingleCourse = CatchAsyncError(
         .select(
           "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links"
         );
-      await redis.set(courseId, JSON.stringify(course));
+      await redis.set(courseId, JSON.stringify(course), "EX", 604800);
       res.status(200).json({
         success: true,
         course,
