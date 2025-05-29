@@ -5,6 +5,7 @@ import { ErrorMiddleware } from "./middlewares/error";
 import analyticsRoutes from "./routes/analytics.route";
 import authRoutes from "./routes/auth.route";
 import courseRoutes from "./routes/course.route";
+import layoutRoutes from "./routes/layout.route";
 import notificationRoutes from "./routes/notification.route";
 import orderRoutes from "./routes/order.route";
 import userRoutes from "./routes/user.route";
@@ -27,6 +28,7 @@ app.use("/api/v1/course", courseRoutes);
 app.use("/api/v1/order", orderRoutes);
 app.use("/api/v1/notification", notificationRoutes);
 app.use("/api/v1/analytics", analyticsRoutes);
+app.use("/api/v1/layout", layoutRoutes);
 
 app.get("/test", (req: Request, res: Response, next: NextFunction) => {
   res.status(200).json({
