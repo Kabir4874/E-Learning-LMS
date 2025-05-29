@@ -107,3 +107,30 @@ export const getAllUser = CatchAsyncError(
     });
   })
 );
+
+export const updateUserRole = CatchAsyncError(
+  TryCatch(async (req, res, next) => {
+    const { id, role } = req.body;
+    const user = await userModel.findByIdAndUpdate(id, { role }, { new: true });
+    res.status(201).json({
+      success: true,
+      user,
+    });
+  })
+);
+
+export const deleteUser = CatchAsyncError(
+  TryCatch(async (req, res, next) => {
+    const { id } = req.params;
+    const user = await userModel.findById(id);
+    if (!user) {
+      return next(new ErrorHandler("User not found", 404));
+    }
+    await user.deleteOne({ id });
+    await redis.del(id);
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
+  })
+);

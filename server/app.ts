@@ -2,6 +2,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
 import { ErrorMiddleware } from "./middlewares/error";
+import analyticsRoutes from "./routes/analytics.route";
 import authRoutes from "./routes/auth.route";
 import courseRoutes from "./routes/course.route";
 import notificationRoutes from "./routes/notification.route";
@@ -25,6 +26,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/course", courseRoutes);
 app.use("/api/v1/order", orderRoutes);
 app.use("/api/v1/notification", notificationRoutes);
+app.use("/api/v1/analytics", analyticsRoutes);
 
 app.get("/test", (req: Request, res: Response, next: NextFunction) => {
   res.status(200).json({
