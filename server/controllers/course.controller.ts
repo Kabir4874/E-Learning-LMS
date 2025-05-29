@@ -7,6 +7,7 @@ import {
 } from "../interfaces/course.interface";
 import { CatchAsyncError } from "../middlewares/catchAsyncErrors";
 import courseModel from "../models/course.model";
+import notificationModel from "../models/notification.model";
 import userModel from "../models/user.model";
 import ErrorHandler from "../utils/errorHandler";
 import sendEmail from "../utils/mail";
@@ -154,6 +155,12 @@ export const addQuestion = CatchAsyncError(
       questionReplies: [],
     };
     courseContent.questions.push(newQuestion);
+
+    await notificationModel.create({
+      userId: req.user._id,
+      title: "New Question Received",
+      message: `You have a new question in ${courseContent?.title}`,
+    });
     await course?.save();
     res.status(200).json({
       success: true,
@@ -189,6 +196,11 @@ export const addAnswer = CatchAsyncError(
     question.questionReplies?.push(newAnswer);
     await course?.save();
     if (req.user?._id === question.user._id) {
+      await notificationModel.create({
+        userId: req.user._id,
+        title: "New Question Reply Received",
+        message: `You have a new question reply in ${courseContent?.title}`,
+      });
     } else {
       const data = {
         name: question.user.name,
@@ -277,6 +289,16 @@ export const addReplyToReview = CatchAsyncError(
     res.status(200).json({
       success: true,
       course,
+    });
+  })
+);
+
+export const getCourses = CatchAsyncError(
+  TryCatch(async (req, res, next) => {
+    const courses = await courseModel.find().sort({ createdAt: -1 });
+    res.status(200).json({
+      success: true,
+      courses,
     });
   })
 );

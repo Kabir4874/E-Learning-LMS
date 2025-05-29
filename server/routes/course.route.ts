@@ -7,6 +7,7 @@ import {
   editCourse,
   getAllCourses,
   getCourseByUser,
+  getCourses,
   getSingleCourse,
   uploadCourse,
 } from "../controllers/course.controller";
@@ -32,4 +33,6 @@ router.patch(
   authorizeRoles("admin"),
   addReplyToReview
 );
+
+router.get("/get-all", isAuthenticated, authorizeRoles("admin"), getCourses);
 export default router;

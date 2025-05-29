@@ -69,3 +69,13 @@ export const createOrder = CatchAsyncError(
     });
   })
 );
+
+export const getAllOrders = CatchAsyncError(
+  TryCatch(async (req, res, next) => {
+    const orders = await orderModel.find().sort({ createdAt: -1 });
+    res.status(200).json({
+      success: true,
+      orders,
+    });
+  })
+);
