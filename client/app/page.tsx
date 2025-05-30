@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Header from "./components/Header";
+import Hero from "./components/Route/Hero";
 import Heading from "./utils/Heading";
 type Props = {};
 
@@ -16,6 +17,7 @@ const Page = (props: Props) => {
         keywords="Programming,MERN,Redux,Machine Learning"
       />
       <Header open={open} activeItem={activeItem} setOpen={setOpen} />
+      <Hero />
     </div>
   );
 };
