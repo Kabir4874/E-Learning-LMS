@@ -47,7 +47,7 @@ const NavItems = ({ activeItem, isMobile }: Props) => {
           <div className="w-full text-center py-6">
             {navItemsData &&
               navItemsData.map((item, index) => (
-                <Link href={"/"} passHref>
+                <Link href={"/"} passHref key={index}>
                   <span
                     className={`${
                       activeItem === index
