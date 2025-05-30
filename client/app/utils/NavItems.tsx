@@ -31,7 +31,7 @@ const NavItems = ({ activeItem, isMobile }: Props) => {
           navItemsData.map((item, index) => (
             <Link href={item.url} key={index} passHref>
               <span
-                className={`text-[18px] !px-6 font-poppins font-normal ${
+                className={`text-[18px] px-6! font-poppins font-normal ${
                   activeItem === index
                     ? "dark:text-[#37a39a] text-[crimson]"
                     : "dark:text-white text-black"
@@ -43,7 +43,7 @@ const NavItems = ({ activeItem, isMobile }: Props) => {
           ))}
       </div>
       {isMobile && (
-        <div className="800px:hidden !mt-10 flex flex-col gap-4 !px-6">
+        <div className="800px:hidden mt-10! flex flex-col gap-4 px-6!">
           <div className="w-full text-center py-6">
             <Link href={"/"} passHref>
               <span className="text-[25px] font-poppins font-medium text-black dark:text-white">

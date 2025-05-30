@@ -37,16 +37,16 @@ const Header = ({ activeItem, setOpen }: Props) => {
       <div
         className={`${
           active
-            ? "dark:opacity-50 dark:bg-gradient-to-b dark:from-gray-900 dark:to-black fixed top-0 left-0 shadow-xl transition duration-500"
+            ? "dark:opacity-50 dark:bg-linear-to-b dark:from-gray-900 dark:to-black fixed top-0 left-0 shadow-xl transition duration-500"
             : "dark:shadow"
-        } w-full h-[80px] z-[80] !border-b dark:border-[#ffffff1c]`}
+        } w-full h-[80px] z-80 border-b! dark:border-[#ffffff1c]`}
       >
-        <div className="w-[95%] 800px:w-[92%] !mx-auto py-2 h-full">
+        <div className="w-[95%] 800px:w-[92%] mx-auto! py-2 h-full">
           <div className="w-full h-[80px] flex items-center justify-between p-3">
             <div>
               <Link
                 href={"/"}
-                className={`text-[25px] font-poppins font-medium !text-black dark:!text-white`}
+                className={`text-[25px] font-poppins font-medium text-black! dark:text-white!`}
               >
                 ELearning
               </Link>
@@ -76,20 +76,20 @@ const Header = ({ activeItem, setOpen }: Props) => {
         {/* mobile sidebar  */}
         {openSidebar && (
           <div
-            className=" fixed w-full h-screen top-0 left-0 z-[999999] dark:bg-[unset] bg-[#00000024]"
+            className=" fixed w-full h-screen top-0 left-0 z-999999 dark:bg-[unset] bg-[#00000024]"
             onClick={handleClose}
             id="screen"
           >
-            <div className="w-[70%] fixed z-[9999999999] h-screen bg-white dark:bg-slate-900 dark:opacity-90 top-0 right-0">
+            <div className="w-[70%] fixed z-9999999999 h-screen bg-white dark:bg-slate-900 dark:opacity-90 top-0 right-0">
               <NavItems activeItem={activeItem} isMobile={true} />
               <HiOutlineUserCircle
                 size={25}
-                className="cursor-pointer !ml-6 !my-4 text-black dark:text-white"
+                className="cursor-pointer ml-6! my-4! text-black dark:text-white"
                 onClick={() => setOpen(true)}
               />
               <br />
               <br />
-              <p className="text-[16px] !py-2 !pl-5 text-black dark:text-white">
+              <p className="text-[16px] py-2! pl-5! text-black dark:text-white">
                 Copyright © 2025 ELearning
               </p>
             </div>
