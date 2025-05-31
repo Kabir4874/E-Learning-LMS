@@ -6,6 +6,8 @@ import CustomModal from "../utils/CustomModal";
 import NavItems from "../utils/NavItems";
 import ThemeSwitcher from "../utils/ThemeSwitcher";
 import Login from "./Auth/Login";
+import SignUp from "./Auth/SignUp";
+import Verification from "./Auth/Verification";
 
 type Props = {
   open: boolean;
@@ -41,9 +43,9 @@ const Header = ({ open, activeItem, setOpen, route, setRoute }: Props) => {
       <div
         className={`${
           active
-            ? "dark:opacity-50 dark:bg-linear-to-b dark:from-gray-900 dark:to-black fixed top-0 left-0 shadow-xl transition duration-500"
-            : "dark:shadow"
-        } w-full h-[80px] z-80 border-b! dark:border-[#ffffff1c]`}
+            ? "dark:opacity-50 dark:bg-linear-to-b dark:from-gray-900 dark:to-black fixed top-0 left-0 shadow-xl! transition duration-500"
+            : "dark:shadow!"
+        } w-full h-[80px] z-80 border-b! dark:border-[#ffffff1c]!`}
       >
         <div className="w-[95%] 800px:w-[92%] mx-auto! py-2 h-full">
           <div className="w-full h-[80px] flex items-center justify-between p-3">
@@ -109,6 +111,32 @@ const Header = ({ open, activeItem, setOpen, route, setRoute }: Props) => {
               setRoute={setRoute}
               activeItem={activeItem}
               component={Login}
+            />
+          )}
+        </>
+      )}
+      {route === "Sign-Up" && (
+        <>
+          {open && (
+            <CustomModal
+              open={open}
+              setOpen={setOpen}
+              setRoute={setRoute}
+              activeItem={activeItem}
+              component={SignUp}
+            />
+          )}
+        </>
+      )}
+      {route === "Verification" && (
+        <>
+          {open && (
+            <CustomModal
+              open={open}
+              setOpen={setOpen}
+              setRoute={setRoute}
+              activeItem={activeItem}
+              component={Verification}
             />
           )}
         </>
