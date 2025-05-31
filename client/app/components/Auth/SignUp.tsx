@@ -13,43 +13,63 @@ type Props = {
 };
 
 const schema = Yup.object().shape({
+  name: Yup.string().required("Please enter your name!"),
   email: Yup.string()
     .email("Invalid Email")
     .required("Please enter you email!"),
   password: Yup.string().required("Please enter your password!").min(6),
 });
 
-const Login = ({ setRoute }: Props) => {
+const SignUp = ({ setRoute }: Props) => {
   const [show, setShow] = useState(false);
   const formik = useFormik({
-    initialValues: { email: "", password: "" },
+    initialValues: { name: "", email: "", password: "" },
     validationSchema: schema,
-    onSubmit: async ({ email, password }) => {
-      console.log(email, password);
+    onSubmit: async ({ name, email, password }) => {
+      setRoute("Verification");
     },
   });
   const { errors, touched, values, handleChange, handleSubmit } = formik;
   return (
     <div className="w-full p-4!">
-      <h1 className={`${styles.title}`}>Login with ELearning</h1>
+      <h1 className={`${styles.title}`}>Join to ELearning</h1>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="email" className={styles.label}>
-          Enter you Email
+        <label htmlFor="name" className={styles.label}>
+          Enter you Name
         </label>
         <input
-          type="email"
-          name="email"
-          value={values.email}
+          type="text"
+          name="name"
+          value={values.name}
           onChange={handleChange}
-          id="email"
-          placeholder="login@gmail.com"
-          className={`${errors.email && touched.email && "border-red-500!"} ${
+          id="name"
+          placeholder="enter your name"
+          className={`${errors.name && touched.name && "border-red-500!"} ${
             styles.input
           } `}
         />
-        {errors.email && touched.email && (
-          <span className="text-red-500! pt-2! block!">{errors.email}</span>
+        {errors.name && touched.name && (
+          <span className="text-red-500! pt-2! block!">{errors.name}</span>
         )}
+        <div className="w-full mt-5! relative mb-1!">
+          <label htmlFor="email" className={styles.label}>
+            Enter you Email
+          </label>
+          <input
+            type="email"
+            name="email"
+            value={values.email}
+            onChange={handleChange}
+            id="email"
+            placeholder="example@gmail.com"
+            className={`${errors.email && touched.email && "border-red-500!"} ${
+              styles.input
+            } `}
+          />
+          {errors.email && touched.email && (
+            <span className="text-red-500! pt-2! block!">{errors.email}</span>
+          )}
+        </div>
         <div className="w-full mt-5! relative mb-1!">
           <label htmlFor="password" className={styles.label}>
             Enter you Password
@@ -83,7 +103,7 @@ const Login = ({ setRoute }: Props) => {
           <span className="text-red-500! pt-2! block">{errors.password}</span>
         )}
         <div className="w-full mt-5!">
-          <input type="submit" value="Login" className={styles.button} />
+          <input type="submit" value="Sign Up" className={styles.button} />
         </div>
         <br />
         <h5 className="text-center pt-4! font-poppins! text-[14px]! text-black dark:text-white">
@@ -97,12 +117,12 @@ const Login = ({ setRoute }: Props) => {
           />
         </div>
         <h5 className="text-center pt-4! font-poppins! text-[14px]! text-black! dark:text-white!">
-          Not have any account?{" "}
+          Already have an account?{" "}
           <span
             className="text-[#2190ff]! pl-1! cursor-pointer"
-            onClick={() => setRoute("Sign-Up")}
+            onClick={() => setRoute("Login")}
           >
-            Sign Up
+            Login
           </span>
         </h5>
       </form>
@@ -111,4 +131,4 @@ const Login = ({ setRoute }: Props) => {
   );
 };
 
-export default Login;
+export default SignUp;
