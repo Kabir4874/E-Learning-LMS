@@ -21,6 +21,7 @@ export const getUserInfo = CatchAsyncError(
     if (!user) {
       return next(new ErrorHandler("User not found", 404));
     }
+    user.password = null;
     res.status(201).json({
       success: true,
       user,

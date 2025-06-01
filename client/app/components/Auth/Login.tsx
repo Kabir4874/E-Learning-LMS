@@ -1,5 +1,7 @@
+import { useLoginMutation } from "@/redux/features/auth/authApi";
 import { useFormik } from "formik";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import {
   AiFillGithub,
   AiOutlineEye,
@@ -10,6 +12,7 @@ import * as Yup from "yup";
 import { styles } from "../../../app/styles/style";
 type Props = {
   setRoute: (route: string) => void;
+  setOpen: (open: boolean) => void;
 };
 
 const schema = Yup.object().shape({
@@ -19,15 +22,31 @@ const schema = Yup.object().shape({
   password: Yup.string().required("Please enter your password!").min(6),
 });
 
-const Login = ({ setRoute }: Props) => {
+const Login = ({ setRoute, setOpen }: Props) => {
   const [show, setShow] = useState(false);
+  const [login, { isLoading, isSuccess, error }] = useLoginMutation();
+
+  useEffect(() => {
+    if (isSuccess) {
+      setOpen(false);
+      toast.success("Login Successfully", { duration: 3000 });
+    }
+    if (error) {
+      if ("data" in error) {
+        const errorData = error as any;
+        toast.error(errorData.data.message, { duration: 3000 });
+      }
+    }
+  }, [isSuccess, error]);
+
   const formik = useFormik({
     initialValues: { email: "", password: "" },
     validationSchema: schema,
     onSubmit: async ({ email, password }) => {
-      console.log(email, password);
+      await login({ email, password });
     },
   });
+
   const { errors, touched, values, handleChange, handleSubmit } = formik;
   return (
     <div className="w-full p-4!">
@@ -83,7 +102,11 @@ const Login = ({ setRoute }: Props) => {
           <span className="text-red-500! pt-2! block">{errors.password}</span>
         )}
         <div className="w-full mt-5!">
-          <input type="submit" value="Login" className={styles.button} />
+          <input
+            type="submit"
+            value={isLoading ? "Loading..." : "Login"}
+            className={styles.button}
+          />
         </div>
         <br />
         <h5 className="text-center pt-4! font-poppins! text-[14px]! text-black dark:text-white">
