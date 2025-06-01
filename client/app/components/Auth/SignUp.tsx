@@ -1,5 +1,7 @@
+import { useRegisterMutation } from "@/redux/features/auth/authApi";
 import { useFormik } from "formik";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import {
   AiFillGithub,
   AiOutlineEye,
@@ -22,14 +24,35 @@ const schema = Yup.object().shape({
 
 const SignUp = ({ setRoute }: Props) => {
   const [show, setShow] = useState(false);
+
+  const [register, { data, error, isSuccess, isLoading }] =
+    useRegisterMutation();
+
+  useEffect(() => {
+    if (isSuccess) {
+      const message = data?.message || "Registration successful";
+      toast.success(message, { duration: 3000 });
+      setRoute("Verification");
+    }
+    if (error) {
+      if ("data" in error) {
+        const errorData = error as any;
+        toast.error(errorData.data.message, { duration: 3000 });
+      }
+    }
+  }, [isSuccess, error]);
+
   const formik = useFormik({
     initialValues: { name: "", email: "", password: "" },
     validationSchema: schema,
     onSubmit: async ({ name, email, password }) => {
-      setRoute("Verification");
+      const data = { name, email, password };
+      register(data);
     },
   });
+
   const { errors, touched, values, handleChange, handleSubmit } = formik;
+
   return (
     <div className="w-full p-4!">
       <h1 className={`${styles.title}`}>Join to ELearning</h1>
@@ -103,7 +126,11 @@ const SignUp = ({ setRoute }: Props) => {
           <span className="text-red-500! pt-2! block">{errors.password}</span>
         )}
         <div className="w-full mt-5!">
-          <input type="submit" value="Sign Up" className={styles.button} />
+          <input
+            type="submit"
+            value={isLoading ? "Loading..." : "Sign Up"}
+            className={styles.button}
+          />
         </div>
         <br />
         <h5 className="text-center pt-4! font-poppins! text-[14px]! text-black dark:text-white">
