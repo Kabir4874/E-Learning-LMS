@@ -1,14 +1,16 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { HiOutlineMenuAlt3, HiOutlineUserCircle } from "react-icons/hi";
+import { useSelector } from "react-redux";
+import avatar from "../../public/avatar.png";
 import CustomModal from "../utils/CustomModal";
 import NavItems from "../utils/NavItems";
 import ThemeSwitcher from "../utils/ThemeSwitcher";
 import Login from "./Auth/Login";
 import SignUp from "./Auth/SignUp";
 import Verification from "./Auth/Verification";
-
 type Props = {
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -20,6 +22,9 @@ type Props = {
 const Header = ({ open, activeItem, setOpen, route, setRoute }: Props) => {
   const [active, setActive] = useState(false);
   const [openSidebar, setOpenSidebar] = useState(false);
+
+  const { user } = useSelector((state: any) => state.auth);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       window.addEventListener("scroll", () => {
@@ -31,6 +36,7 @@ const Header = ({ open, activeItem, setOpen, route, setRoute }: Props) => {
       });
     }
   }, []);
+
   const handleClose = (e: any) => {
     if (e.target.id === "screen") {
       {
@@ -70,11 +76,23 @@ const Header = ({ open, activeItem, setOpen, route, setRoute }: Props) => {
                 />
               </div>
               <div className="hidden 800px:block">
-                <HiOutlineUserCircle
-                  size={25}
-                  className=" cursor-pointer dark:text-white text-black"
-                  onClick={() => setOpen(true)}
-                />
+                {user ? (
+                  <Link href={"/profile"}>
+                    <Image
+                      src={user?.avatar ? user.avatar : avatar}
+                      alt="avatar"
+                      width={30}
+                      height={30}
+                      className=" cursor-pointer"
+                    />
+                  </Link>
+                ) : (
+                  <HiOutlineUserCircle
+                    size={25}
+                    className=" cursor-pointer dark:text-white text-black"
+                    onClick={() => setOpen(true)}
+                  />
+                )}
               </div>
             </div>
           </div>
