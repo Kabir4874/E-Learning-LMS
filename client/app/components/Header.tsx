@@ -1,7 +1,10 @@
 "use client";
+import { useSocialAuthMutation } from "@/redux/features/auth/authApi";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { HiOutlineMenuAlt3, HiOutlineUserCircle } from "react-icons/hi";
 import { useSelector } from "react-redux";
 import avatar from "../../public/avatar.png";
@@ -24,6 +27,30 @@ const Header = ({ open, activeItem, setOpen, route, setRoute }: Props) => {
   const [openSidebar, setOpenSidebar] = useState(false);
 
   const { user } = useSelector((state: any) => state.auth);
+  console.log(user, "user");
+  const { data } = useSession();
+  const [socialAuth, { isSuccess, error }] = useSocialAuthMutation();
+
+  useEffect(() => {
+    if (!user) {
+      if (data) {
+        socialAuth({
+          email: data.user?.email,
+          name: data.user?.name,
+          avatar: data.user?.image,
+        });
+      }
+    }
+    if (isSuccess) {
+      toast.success("Login Successful", { duration: 3000 });
+    }
+    if (error) {
+      if ("data" in error) {
+        const errorData = error as any;
+        toast.error(errorData.data.message, { duration: 3000 });
+      }
+    }
+  }, [data, user, error]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
