@@ -1,8 +1,11 @@
 "use client";
+import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
 import { Josefin_Sans, Poppins } from "next/font/google";
+import React from "react";
 import { Toaster } from "react-hot-toast";
+import Loader from "./components/Loader/Loader";
 import "./globals.css";
 import Providers from "./Provider";
 const poppins = Poppins({
@@ -30,7 +33,7 @@ export default function RootLayout({
         <Providers>
           <SessionProvider>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-              {children}
+              <Custom>{children}</Custom>
               <Toaster position="top-center" reverseOrder={false} />
             </ThemeProvider>
           </SessionProvider>
@@ -39,3 +42,8 @@ export default function RootLayout({
     </html>
   );
 }
+
+const Custom = ({ children }: { children: React.ReactNode }) => {
+  const { isLoading } = useLoadUserQuery({});
+  return <>{isLoading ? <Loader /> : <>{children}</>}</>;
+};
