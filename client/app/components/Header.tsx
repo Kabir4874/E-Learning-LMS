@@ -189,5 +189,4 @@ const Header = ({ open, activeItem, setOpen, route, setRoute }: Props) => {
     </div>
   );
 };
-
 export default Header;
