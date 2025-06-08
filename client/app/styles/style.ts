@@ -3,6 +3,7 @@ export const styles = {
     "text-[25px]! text-black dark:text-white font-medium! font-poppins! text-center py-2!",
 
   label: "font-poppins! text-black dark:text-white",
+
   input:
     "w-full text-black! dark:text-white! bg-transparent border! rounded! h-[40px] px-2! outline-none! mt-[10px]! font-poppins",
   button:
