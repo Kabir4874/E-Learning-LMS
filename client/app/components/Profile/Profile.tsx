@@ -1,4 +1,6 @@
 "use client";
+import { useLogoutQuery } from "@/redux/features/auth/authApi";
+import { signOut } from "next-auth/react";
 import { useEffect, useState } from "react";
 import SidebarProfile from "./SidebarProfile";
 
@@ -10,9 +12,13 @@ const Profile = ({ user }: Props) => {
   const [scroll, setScroll] = useState(false);
   const [avatar, setAvatar] = useState(null);
   const [active, setActive] = useState(1);
+  const [logout, setLogout] = useState(false);
+
+  const {} = useLogoutQuery(undefined, { skip: !logout ? true : false });
 
   const logoutHandler = async () => {
-    console.log("logout handler");
+    setLogout(true);
+    await signOut();
   };
 
   useEffect(() => {
@@ -29,9 +35,9 @@ const Profile = ({ user }: Props) => {
   return (
     <div className="w-[85%] flex mx-auto">
       <div
-        className={`w-[60px] 800px:w-[310px] h-[450px] bg-slate-900! opacity-90 border! border-[##ffffff1d]! rounded-[5px]! shadow-sm! sticky ${
+        className={`w-[60px] 800px:w-[310px] h-[450px] dark:bg-slate-900! bg-white! opacity-90 border! dark:border-[##ffffff1d]! border-[#00000033]! rounded-[5px]! my-[80px]! shadow-sm! sticky ${
           scroll ? "top-[120px]" : "top-[30px]"
-        }`}
+        } left-[30px]`}
       >
         <SidebarProfile
           user={user}

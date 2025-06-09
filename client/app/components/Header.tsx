@@ -1,5 +1,8 @@
 "use client";
-import { useSocialAuthMutation } from "@/redux/features/auth/authApi";
+import {
+  useLogoutQuery,
+  useSocialAuthMutation,
+} from "@/redux/features/auth/authApi";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -27,9 +30,13 @@ const Header = ({ open, activeItem, setOpen, route, setRoute }: Props) => {
   const [openSidebar, setOpenSidebar] = useState(false);
 
   const { user } = useSelector((state: any) => state.auth);
-  console.log(user, "user");
+
   const { data } = useSession();
   const [socialAuth, { isSuccess, error }] = useSocialAuthMutation();
+
+  const [logout, setLogout] = useState(false);
+
+  const {} = useLogoutQuery(undefined, { skip: !logout ? true : false });
 
   useEffect(() => {
     if (!user) {
@@ -41,16 +48,24 @@ const Header = ({ open, activeItem, setOpen, route, setRoute }: Props) => {
         });
       }
     }
-    if (isSuccess) {
-      toast.success("Login Successful", { duration: 3000 });
+
+    if (data === null) {
+      if (isSuccess) {
+        toast.success("Login Successfully", { duration: 3000 });
+      }
     }
+
+    if (data === null) {
+      setLogout(true);
+    }
+
     if (error) {
       if ("data" in error) {
         const errorData = error as any;
         toast.error(errorData.data.message, { duration: 3000 });
       }
     }
-  }, [data, user, error]);
+  }, [data, user, error, isSuccess]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
